@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QuantumDx – Quantum AI Medical Imaging</title>
+<meta name="description" content="Hybrid quantum-classical AI that screens chest X-rays for pneumonia. Trained on the real PneumoniaMNIST dataset and simulated live in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<header class="nav">
+  <a class="logo" href="#home"><span class="logo-mark">⚛</span> Quantum<b>Dx</b></a>
+  <nav id="links"></nav>
+  <div class="nav-r">
+    <button id="theme" class="icon-btn" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+    <a class="btn small ghost" href="https://github.com/YOUR-USERNAME/quantum-dx" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</header>
+
+<main>
+<!-- ============ HOME ============ -->
+<section class="page" id="home">
+  <div class="hero">
+    <div class="hero-l">
+      <span class="badge"><i></i> Hybrid quantum–classical AI</span>
+      <h1>Screening chest X-rays with a <span class="grad">quantum circuit</span></h1>
+      <p class="lead">A <b id="hq">6</b>-qubit variational circuit, trained and tested on real pneumonia X-rays from the PneumoniaMNIST dataset, and simulated live in your browser.</p>
+      <div class="cta"><a class="btn" href="#diagnose">Upload an X-ray →</a><a class="btn ghost" href="#results">View results</a></div>
+      <p class="fine">Research prototype · not a medical device</p>
+    </div>
+    <div class="hero-r" aria-hidden="true">
+      <svg viewBox="0 0 400 400" class="orb">
+        <defs><radialGradient id="core"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="var(--cyan)"/><stop offset="1" stop-color="var(--violet)" stop-opacity="0"/></radialGradient></defs>
+        <circle cx="200" cy="200" r="70" fill="url(#core)"/>
+        <g class="ring r1"><ellipse cx="200" cy="200" rx="170" ry="60" fill="none" stroke="var(--violet)" stroke-opacity=".6"/><circle cx="370" cy="200" r="9" fill="var(--violet)"/></g>
+        <g class="ring r2"><ellipse cx="200" cy="200" rx="170" ry="60" fill="none" stroke="var(--cyan)" stroke-opacity=".6" transform="rotate(60 200 200)"/><circle cx="285" cy="53" r="9" fill="var(--cyan)"/></g>
+        <g class="ring r3"><ellipse cx="200" cy="200" rx="170" ry="60" fill="none" stroke="var(--pink)" stroke-opacity=".6" transform="rotate(120 200 200)"/><circle cx="285" cy="347" r="9" fill="var(--pink)"/></g>
+      </svg>
+      <span class="chip c1">RY(θ)</span><span class="chip c2">CNOT</span><span class="chip c3">|ψ⟩</span><span class="chip c4">⟨Z⟩</span>
+    </div>
+  </div>
+  <div class="grid4" id="hstats"></div>
+  <h2 class="sec">How it works</h2>
+  <div class="grid4 steps">
+    <div class="card"><div class="ico">🩻</div><h3>1 · Scan in</h3><p>A chest X-ray is converted to 28×28 grayscale, the MedMNIST format.</p></div>
+    <div class="card"><div class="ico">📐</div><h3>2 · Features</h3><p>Six measurable properties (brightness, contrast, edges, lung asymmetry) are extracted.</p></div>
+    <div class="card"><div class="ico">⚛</div><h3>3 · Quantum circuit</h3><p>Features become qubit rotations. Trainable layers with entangling CNOTs transform the state.</p></div>
+    <div class="card"><div class="ico">🎯</div><h3>4 · Measure</h3><p>Measuring qubit 0 gives the probability that the scan shows pneumonia.</p></div>
+  </div>
+  <div class="grid3">
+    <div class="card"><h3>Real data</h3><p>Trained on 4,708 and tested on 624 real pediatric chest X-rays. Nothing is mocked.</p></div>
+    <div class="card"><h3>Fully transparent</h3><p>The Python training code and this JavaScript model run the identical circuit. Everything is open source.</p></div>
+    <div class="card"><h3>Honest results</h3><p>We report sensitivity, specificity, AUC and a classical baseline, including where the quantum model falls short.</p></div>
+  </div>
+</section>
+
+<!-- ============ DATASET ============ -->
+<section class="page" id="dataset">
+  <h2 class="title">Dataset: PneumoniaMNIST</h2>
+  <p class="lead">Real pediatric chest X-rays (frontal view) labelled <b>Normal</b> or <b>Pneumonia</b>, from the MedMNIST collection. It is derived from a public pediatric chest X-ray dataset (Kermany et al., 2018) and downsampled to 28×28 grayscale.</p>
+  <div class="grid4" id="dstats"></div>
+  <div class="grid2">
+    <div class="card"><h3>Class balance per split</h3><div id="dbars"></div><p class="fine">Training data is about 74% pneumonia, so training uses class-weighted loss and the decision threshold is tuned on validation data only.</p></div>
+    <div class="card"><h3>Splits</h3><table id="dtab"></table><p class="fine">Test data is never used for training or for choosing the threshold.</p></div>
+  </div>
+  <div class="card"><h3>Test-set gallery <span class="fine">(click a scan to classify it)</span></h3><div class="gallery" id="dgal"></div></div>
+</section>
+
+<!-- ============ MODEL ============ -->
+<section class="page" id="model">
+  <h2 class="title">The quantum model</h2>
+  <p class="lead">A variational quantum classifier: classical image features are encoded into qubit rotations, processed by trainable entangling layers, and read out by measurement.</p>
+  <div class="card"><h3>Circuit <span class="fine">(hover a gate to see its trained angle)</span></h3><div class="scroll" id="circ"></div></div>
+  <div class="grid2">
+    <div class="card"><h3>Features → qubits</h3><table id="ftab"></table><p class="fine">Each feature is scaled to [0, π] using training-set percentiles and applied as an RY rotation.</p></div>
+    <div class="card"><h3>Training setup</h3><table id="htab"></table></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Training loss</h3><div id="lossc"></div></div>
+    <div class="card"><h3>What the circuit computes</h3>
+      <p>After encoding and <b id="ml">3</b> layers of <code>RY(θ)</code> + a CNOT ring, we measure the Pauli-Z expectation of qubit 0:</p>
+      <p class="formula">P(pneumonia) = ( 1 − ⟨Z₀⟩ ) / 2</p>
+      <p class="fine">The circuit is simulated exactly on a classical computer (a 2ⁿ-amplitude state vector). It is not run on quantum hardware.</p></div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="page" id="results">
+  <h2 class="title">Results on real test data</h2>
+  <p class="lead" id="rlead"></p>
+  <div class="grid4" id="rstats"></div>
+  <div class="grid2">
+    <div class="card"><h3>Confusion matrix (test)</h3><div class="cm" id="cm"></div></div>
+    <div class="card"><h3>ROC curve (test)</h3><div id="roc"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Quantum vs classical baseline</h3><div id="cmp"></div><p class="fine" id="bnote"></p></div>
+    <div class="card"><h3>Performance by split</h3><table id="stab"></table>
+      <div class="note"><b>Reading the numbers.</b> Sensitivity is high, so few pneumonia cases are missed. Specificity is lower, meaning more healthy scans are flagged. A simple logistic regression on the same features scores higher, so no quantum advantage is claimed.</div></div>
+  </div>
+</section>
+
+<!-- ============ DIAGNOSE ============ -->
+<section class="page" id="diagnose">
+  <h2 class="title">Upload an X-ray &amp; classify</h2>
+  <div class="grid2 diag">
+    <div class="card">
+      <label class="drop" id="drop"><input id="file" type="file" accept="image/*" hidden>
+        <div id="ph"><div class="up">⬆</div><b>Click or drop a chest X-ray</b><span class="fine">PNG / JPG · processed locally in your browser, never uploaded</span></div>
+        <div class="scan" id="scan" hidden></div></label>
+      <p class="fine" style="margin:14px 0 8px">Or try a real test-set scan:</p><div class="gallery small" id="try"></div>
+    </div>
+    <div class="card" id="out">
+      <div class="idle" id="idle"><div class="ico big">🫁</div><p>The quantum circuit will run here as soon as you add an image.</p></div>
+      <div id="res" hidden>
+        <div class="gauge-wrap"><svg viewBox="0 0 220 125" class="gauge"><path d="M20 110 A90 90 0 0 1 200 110" class="g-bg"/><path id="gfill" d="M20 110 A90 90 0 0 1 200 110" class="g-fill"/></svg>
+          <div class="g-val"><b id="gp">0%</b><span>pneumonia probability</span></div></div>
+        <div class="verdict" id="verdict"></div>
+        <p class="fine" id="warn" hidden></p>
+        <div class="split"><div><span class="fine">Pneumonia</span><div class="bar"><i id="b1" class="bad"></i></div></div><div><span class="fine">Normal</span><div class="bar"><i id="b0" class="good"></i></div></div></div>
+        <h4>Encoded features (angle / π)</h4><div id="fbars"></div>
+        <h4>Quantum state · |amplitude|² over <span id="nst">64</span> basis states</h4><div class="amps" id="amps"></div>
+        <p class="fine" id="tech"></p><p class="fine" id="truth"></p>
+      </div>
+    </div>
+  </div>
+  <p class="fine center">Works best with frontal pediatric chest X-rays like the training data. Research prototype only: never use it for medical decisions.</p>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="page" id="about">
+  <h2 class="title">About the project</h2>
+  <div class="grid2">
+    <div class="card"><h3>Problem</h3><p>Reading chest X-rays for pneumonia needs expert radiologists, who are scarce in many regions. Automated screening could support earlier detection. This project explores whether a very small quantum circuit can learn that task.</p>
+      <h3>Technology</h3><div class="chips"><span>Python</span><span>NumPy</span><span>scikit-learn</span><span>Matplotlib</span><span>HTML</span><span>CSS</span><span>JavaScript</span><span>GitHub Pages</span></div></div>
+    <div class="card"><h3>Limitations</h3><ul>
+      <li>The quantum circuit is simulated classically, not run on quantum hardware.</li>
+      <li>Images are only 28×28, so fine detail is lost.</li>
+      <li>A classical model on the same features performs slightly better.</li>
+      <li>Trained on one pediatric dataset; it may not generalise to other populations or scanners.</li>
+      <li>Not a medical device. Do not use for diagnosis or treatment.</li></ul></div>
+  </div>
+  <div class="card"><h3>Reproduce it</h3><pre>pip install -r python/requirements.txt
+python tests/test_simulator.py
+python python/train.py --data data/pneumoniamnist.npz</pre><p class="fine">Training rewrites <code>js/results.js</code>, which this website reads, so the site always shows the numbers from the latest run.</p></div>
+</section>
+</main>
+<footer>QuantumDx · trained on PneumoniaMNIST (MedMNIST, CC BY 4.0) · educational research prototype, not a medical device</footer>
+
+<script src="js/results.js"></script>
+<script src="js/quantum.js"></script>
+<script src="js/app.js"></script>
+</body></html>

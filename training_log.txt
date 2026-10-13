@@ -1,0 +1,52 @@
+Dataset: train 4708  val 524  test 624
+Quantum model: 6 qubits, 3 layers, 18 trainable parameters
+
+[seed 0] training ...
+    step   1/120  loss 0.2246
+    step  20/120  loss 0.1315
+    step  40/120  loss 0.1059
+    step  60/120  loss 0.0991
+    step  80/120  loss 0.0986
+    step 100/120  loss 0.0984
+    step 120/120  loss 0.0984
+[seed 0] validation accuracy 0.8760 (threshold 0.38)
+
+[seed 1] training ...
+    step   1/120  loss 0.2448
+    step  20/120  loss 0.1358
+    step  40/120  loss 0.1195
+    step  60/120  loss 0.1185
+    step  80/120  loss 0.1183
+    step 100/120  loss 0.1183
+    step 120/120  loss 0.1183
+[seed 1] validation accuracy 0.8664 (threshold 0.28)
+
+[seed 2] training ...
+    step   1/120  loss 0.2266
+    step  20/120  loss 0.1452
+    step  40/120  loss 0.1419
+    step  60/120  loss 0.1410
+    step  80/120  loss 0.1409
+    step 100/120  loss 0.1409
+    step 120/120  loss 0.1409
+[seed 2] validation accuracy 0.8683 (threshold 0.44)
+
+[seed 3] training ...
+    step   1/120  loss 0.2470
+    step  20/120  loss 0.1238
+    step  40/120  loss 0.1166
+    step  60/120  loss 0.1157
+    step  80/120  loss 0.1154
+    step 100/120  loss 0.1154
+    step 120/120  loss 0.1154
+[seed 3] validation accuracy 0.8836 (threshold 0.39)
+
+Best seed (by validation): 3   decision threshold: 0.39
+train  acc 0.8874  sens 0.9201  spec 0.7932  prec 0.9276
+val    acc 0.8836  sens 0.9229  spec 0.7704  prec 0.9205
+test   acc 0.8317  sens 0.9282  spec 0.6709  prec 0.8246
+TEST ROC-AUC 0.9238
+TEST confusion matrix: TN 157  FP 77  FN 28  TP 362
+Classical baseline (logistic regression, same features): acc 0.8734  auc 0.9469
+
+Done in 38s. Wrote results/metrics.json, results/training_results.png, js/results.js
